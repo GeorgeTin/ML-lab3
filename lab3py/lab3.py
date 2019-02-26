@@ -21,6 +21,7 @@ from scipy import misc
 from imp import reload
 from labfuns import *
 import random
+from math import log, exp
 
 # from assignment12 import computePrior, mlParams
 from assignment45 import computePrior, mlParams
@@ -47,6 +48,23 @@ def classifyBayes(X, prior, mu, sigma):
     # TODO: Ass 2
     # TODO: fill in the code to compute the log posterior logProb!
     # ==========================
+    #
+    # for i in range(Nclasses):
+    #     log_sigma = np.log(np.linalg.norm(sigma[i]))
+    #     diag_sigma = np.diag(sigma)
+    #     sigma_k = np.diag(1 / diag_sigma)
+    #
+    #     for j in range(Npts):
+    #         log_prior = np.log(prior[i])
+    #         product_val = (X[j] - mu[i])
+    #
+    #         # TODO: continua aici: merge dot product intre diag_sigma si ceilalti vectori??
+    #         # for k in range(len(X[j])):
+    #         #     product_val[k] *= 1/sigma[i][k][k]
+    #
+    #         product_val = product_val.dot((X[j] - mu[i]).T)
+    #
+    #         logProb[i][j] = -(1 / 2) * log_sigma - (1 / 2) * product_val + log_prior
 
     for j in range(Npts):
 
@@ -96,21 +114,22 @@ class BayesClassifier(object):
 
 X, labels = genBlobs(centers=5)
 mu, sigma = mlParams(X,labels)
+# TODO: uncomment next line
 plotGaussian(X,labels,mu,sigma)
 
 
 # Call the `testClassifier` and `plotBoundary` functions for this part.
 
 
-# testClassifier(BayesClassifier(), dataset='iris', split=0.7)
+testClassifier(BayesClassifier(), dataset='iris', split=0.7)
 
 
 
-testClassifier(BayesClassifier(), dataset='vowel', split=0.7)
+# testClassifier(BayesClassifier(), dataset='vowel', split=0.7)
 
 
 
-# plotBoundary(BayesClassifier(), dataset='iris',split=0.7)
+plotBoundary(BayesClassifier(), dataset='iris',split=0.7)
 
 
 # ## Boosting functions to implement
@@ -143,8 +162,25 @@ def trainBoost(base_classifier, X, labels, T=10):
 
         # TODO: Fill in the rest, construct the alphas etc.
         # ==========================
-        
-        # alphas.append(alpha) # you will need to append the new alpha
+
+        e_t = 0
+        for i in range(len(vote)):
+            if vote[i] != labels[i]:
+                e_t += wCur[i] * 1
+
+        # TODO: it doesn't work with assignment45. Case: error is zero (0)
+        alpha_t = (1/2) * (log(1-e_t) - log(e_t))
+
+        for i in range(len(vote)):
+            if vote[i] == labels[i]:
+                wCur[i] = (wCur[i]) * exp(-alpha_t)
+            else:
+                wCur[i] = (wCur[i]) * exp(alpha_t)
+
+        z_t = sum(wCur)
+        wCur = wCur/z_t
+
+        alphas.append(alpha_t) # you will need to append the new alpha
         # ==========================
         
     return classifiers, alphas
@@ -167,7 +203,13 @@ def classifyBoost(X, classifiers, alphas, Nclasses):
         # TODO: implement classificiation when we have trained several classifiers!
         # here we can do it by filling in the votes vector with weighted votes
         # ==========================
-        
+
+        for i in range(len(classifiers)):
+            vote = classifiers[i].classify(X)
+
+            for j in range(Npts):
+                votes[j][vote[j]] += alphas[i]
+
         # ==========================
 
         # one way to compute yPred after accumulating the votes
@@ -201,6 +243,7 @@ class BoostClassifier(object):
 
 
 # testClassifier(BoostClassifier(BayesClassifier(), T=10), dataset='iris',split=0.7)
+
 
 
 

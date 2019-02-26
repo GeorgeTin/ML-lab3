@@ -4,6 +4,7 @@ from imp import reload
 from labfuns import *
 import random
 
+
 # NOTE: you do not need to handle the W argument for this part!
 # in: labels - N vector of class labels
 # out: prior - C x 1 vector of class priors
@@ -22,12 +23,10 @@ def computePrior(labels, W=None):
     # TODO: compute the values of prior for each class!
     # ==========================
 
-    # print(W)
-
     for jdx, cls in enumerate(classes):
 
         idx = np.where(labels == cls)[0]
-        nk = len(labels[idx, ])
+        nk = len(idx)
 
         prior[jdx] = nk/Npts
 

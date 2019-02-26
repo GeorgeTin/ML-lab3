@@ -80,7 +80,6 @@ def mlParams(X, labels, test, W = None):
         xlc = X[idx, :]
 
         # Compute mu
-        # mu[jdx] = np.sum(xlc)/len(xlc)
         mu[jdx] = np.sum(xlc, axis=0) / len(xlc)
         print(mu)
 
@@ -89,22 +88,9 @@ def mlParams(X, labels, test, W = None):
 
         for m in range(Ndims):
             for i in range(len(xlc)):
-                # for j in range(len(xlc[0])):
-                print("merge?")
-                # print(xlc[i][m])
-                # print(mu[jdx][m])
-                print(pow(xlc[i][m] - mu[jdx][m], 2))
                 sigma_sum[m] += pow(xlc[i][m] - mu[jdx][m], 2)
 
-        print(sigma_sum)
-
         sigma[jdx] = np.diag(sigma_sum/len(xlc))
-
-
-    # Print results
-
-    print(sigma)
-    # print(mu)
 
     # ==========================
 
@@ -125,8 +111,6 @@ def computePrior(labels, W=None):
     # TODO: compute the values of prior for each class!
     # ==========================
 
-    # print(W)
-
     for jdx, cls in enumerate(classes):
 
         idx = np.where(labels == cls)[0]
@@ -138,14 +122,35 @@ def computePrior(labels, W=None):
 
     return prior
 
+def compute_prior_test_method():
+
+    X = np.array((1,5,2))
+
+    sigma = np.array([5, 0, 0], [0, 3, 0], [0, 0, 9])
+
+    log_sigma = np.log(np.linalg.norm(sigma[i]))
+    diag_sigma = np.diag(sigma)
+    sigma_k = np.diag(1 / diag_sigma)
+
+    for j in range(Npts):
+        log_prior = np.log(prior[i])
+
+        # TODO: continua aici: merge dot product intre diag_sigma si ceilalti vectori??
+        # for k in range(len(X[j])):
+        #     product_val[k] *= 1/sigma[i][k][k]
+
+        product_val = product_val.dot((X[j] - mu[i]).T)
+
+        logProb[i][j] = -(1 / 2) * log_sigma - (1 / 2) * product_val + log_prior
 
 
-labels = np.array([1, 1, 2])
-
-X = np.array(([12, 2],
-              [5, 2],
-              [12, 23]))
-
-mlParams1(X, labels)
+compute_prior_test_method()
+# labels = np.array([1, 1, 2])
+#
+# X = np.array(([12, 2],
+#               [5, 2],
+#               [12, 23]))
+#
+# mlParams1(X, labels)
 
 # computePrior(labels)
