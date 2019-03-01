@@ -22,11 +22,13 @@ def computePrior(labels, W=None):
     # TODO: compute the values of prior for each class!
     # ==========================
 
+    sum_w = sum(W)
+
     for jdx, cls in enumerate(classes):
 
         idx = np.where(labels == cls)[0]
         wkl = W[idx, ]
-        prior[jdx] = sum(wkl)/sum(W)
+        prior[jdx] = sum(wkl)/sum_w
 
     # ==========================
 
@@ -60,23 +62,23 @@ def mlParams(X, labels, W = None):
         idx = np.where(labels == cls)[0]
         xlc = X[idx, :]
         wlc = W[idx, :]
-        my_x = np.zeros((Nclasses, Ndims))
+        x_weight = np.zeros(Ndims)
 
         for i in range(len(xlc)):
-            for j in range(len(xlc[0])):
-                my_x[jdx][j] += (xlc[i][j] * wlc[i])
+            x_weight += ([x*wlc[i][0] for x in xlc[i]])
 
         wlc_sum = np.sum(wlc)
 
         # Compute mu
-        mu[jdx] = np.sum(my_x, axis = 0)/wlc_sum
+        mu[jdx] = x_weight/wlc_sum
 
         # Compute sigma
-        sigma_sum = np.zeros(Ndims)
+        matrix_substraction = (xlc - mu[jdx].transpose()).transpose()
 
-        for m in range(Ndims):
-            for i in range(len(xlc)):
-                sigma_sum[m] += wlc[i] * pow(xlc[i][m] - mu[jdx][m], 2)
+        for j in range(len(matrix_substraction)):
+            matrix_substraction[j] = [x * x * wlc[j] for x in matrix_substraction[j]]
+
+        sigma_sum = np.sum(matrix_substraction, axis=1)
 
         sigma[jdx] = np.diag(sigma_sum/wlc_sum)
 

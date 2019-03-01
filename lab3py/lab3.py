@@ -23,8 +23,8 @@ from labfuns import *
 import random
 from math import log, exp
 
-# from assignment12 import computePrior, mlParams
-from assignment45 import computePrior, mlParams
+from assignment12 import computePrior, mlParams
+# from assignment45 import computePrior, mlParams
 
 
 # ## Bayes classifier functions to implement
@@ -49,36 +49,18 @@ def classifyBayes(X, prior, mu, sigma):
     # TODO: fill in the code to compute the log posterior logProb!
     # ==========================
     #
-    # for i in range(Nclasses):
-    #     log_sigma = np.log(np.linalg.norm(sigma[i]))
-    #     diag_sigma = np.diag(sigma)
-    #     sigma_k = np.diag(1 / diag_sigma)
-    #
-    #     for j in range(Npts):
-    #         log_prior = np.log(prior[i])
-    #         product_val = (X[j] - mu[i])
-    #
-    #         # TODO: continua aici: merge dot product intre diag_sigma si ceilalti vectori??
-    #         # for k in range(len(X[j])):
-    #         #     product_val[k] *= 1/sigma[i][k][k]
-    #
-    #         product_val = product_val.dot((X[j] - mu[i]).T)
-    #
-    #         logProb[i][j] = -(1 / 2) * log_sigma - (1 / 2) * product_val + log_prior
+    for i in range(Nclasses):
+        log_sigma = np.log(np.linalg.norm(sigma[i]))
+        diag_sigma = np.diag(sigma[i])
+        diag_sigma_inverse = 1 / diag_sigma
+        log_prior = np.log(prior[i])
 
-    for j in range(Npts):
+        x_subt = (X - mu[i].transpose()).transpose()
 
-        for i in range(Nclasses):
-            log_sigma = np.log(np.linalg.norm(sigma[i]))
-            log_prior = np.log(prior[i])
-            product_val = (X[j] - mu[i])
+        for j in range(len(x_subt)):
+            x_subt[j] = pow(x_subt[j], 2) * diag_sigma_inverse[j]
 
-            for k in range(len(X[j])):
-                product_val[k] *= 1/sigma[i][k][k]
-
-            product_val = product_val.dot((X[j]-mu[i]).T)
-
-            logProb[i][j] = -(1/2)*log_sigma - (1/2)*product_val + log_prior
+        logProb[i] = -(1 / 2) * log_sigma - (1 / 2) * sum(x_subt) + log_prior
 
     # ==========================
     
@@ -115,13 +97,13 @@ class BayesClassifier(object):
 X, labels = genBlobs(centers=5)
 mu, sigma = mlParams(X,labels)
 # TODO: uncomment next line
-plotGaussian(X,labels,mu,sigma)
+# plotGaussian(X,labels,mu,sigma)
 
 
 # Call the `testClassifier` and `plotBoundary` functions for this part.
 
 
-testClassifier(BayesClassifier(), dataset='iris', split=0.7)
+# testClassifier(BayesClassifier(), dataset='iris', split=0.7)
 
 
 
@@ -129,7 +111,7 @@ testClassifier(BayesClassifier(), dataset='iris', split=0.7)
 
 
 
-plotBoundary(BayesClassifier(), dataset='iris',split=0.7)
+# plotBoundary(BayesClassifier(), dataset='iris',split=0.7)
 
 
 # ## Boosting functions to implement
@@ -180,7 +162,8 @@ def trainBoost(base_classifier, X, labels, T=10):
         z_t = sum(wCur)
         wCur = wCur/z_t
 
-        alphas.append(alpha_t) # you will need to append the new alpha
+        alphas.append(alpha_t)
+        # you will need to append the new alpha
         # ==========================
         
     return classifiers, alphas
@@ -257,11 +240,11 @@ class BoostClassifier(object):
 # Now repeat the steps with a decision tree classifier.
 
 
-#testClassifier(DecisionTreeClassifier(), dataset='iris', split=0.7)
+testClassifier(DecisionTreeClassifier(), dataset='iris', split=0.7)
 
 
 
-#testClassifier(BoostClassifier(DecisionTreeClassifier(), T=10), dataset='iris',split=0.7)
+# testClassifier(BoostClassifier(DecisionTreeClassifier(), T=10), dataset='iris',split=0.7)
 
 
 

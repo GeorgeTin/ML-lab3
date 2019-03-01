@@ -66,13 +66,13 @@ def mlParams(X, labels, W = None):
         mu[jdx] = np.sum(xlc, axis=0) / len(xlc)
 
         # Compute sigma
-        sigma_sum = np.zeros(Ndims)
+        matrix_substraction = (xlc - mu[jdx].transpose()).transpose()
 
-        for m in range(Ndims):
-            for i in range(len(xlc)):
-                sigma_sum[m] += pow(xlc[i][m] - mu[jdx][m], 2)
+        for j in range(len(matrix_substraction)):
+            matrix_substraction[j] = [x * x for x in matrix_substraction[j]]
 
-        sigma[jdx] = np.diag(sigma_sum/len(xlc))
+        sigma_sum = np.sum(matrix_substraction, axis=1)
+        sigma[jdx] = np.diag(sigma_sum / len(xlc))
 
     # ==========================
 

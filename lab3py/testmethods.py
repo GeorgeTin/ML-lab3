@@ -122,29 +122,34 @@ def computePrior(labels, W=None):
 
     return prior
 
-def compute_prior_test_method():
+def ml():
 
-    X = np.array((1,5,2))
+    xlc = np.array([[1, 3, 5], [2, 1, 3]])
+    muk = np.array([(5, 5, 5)])
 
-    sigma = np.array([5, 0, 0], [0, 3, 0], [0, 0, 9])
+    sigma_sum = np.array([0,0,0])
 
-    log_sigma = np.log(np.linalg.norm(sigma[i]))
-    diag_sigma = np.diag(sigma)
-    sigma_k = np.diag(1 / diag_sigma)
+    for m in range(3):
+        for i in range(2):
+            sigma_sum[m] += pow(xlc[i][m] - muk[0][m], 2)
 
-    for j in range(Npts):
-        log_prior = np.log(prior[i])
+    print(sigma_sum)
 
-        # TODO: continua aici: merge dot product intre diag_sigma si ceilalti vectori??
-        # for k in range(len(X[j])):
-        #     product_val[k] *= 1/sigma[i][k][k]
+    # print(np.diag(sigma_sum/len(xlc)))
 
-        product_val = product_val.dot((X[j] - mu[i]).T)
+    new_matrix = (xlc - muk[0].transpose()).transpose()
 
-        logProb[i][j] = -(1 / 2) * log_sigma - (1 / 2) * product_val + log_prior
+    # print(new_matrix)
 
+    for j in range(len(new_matrix)):
+        new_matrix[j] = [x*x for x in new_matrix[j]]
 
-compute_prior_test_method()
+    # print(new_matrix)
+
+    sigma_line = np.sum(new_matrix, axis=1)
+    print(sigma_line)
+ml()
+
 # labels = np.array([1, 1, 2])
 #
 # X = np.array(([12, 2],
